@@ -1,0 +1,16 @@
+{
+    "name": "pxt-wifi",
+    "version": "1.0.0",
+    "description": "Connect micro:bit to the Internet with a WiFi:bit module.",
+    "dependencies": {
+        "core": "*"
+    },
+    "files": [
+        "README.md",
+        "main.ts"
+    ],
+    "testFiles": [
+        "test.ts"
+    ],
+    "public": true
+}
