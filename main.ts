@@ -143,7 +143,7 @@ namespace WiFiBit {
      */
     //% weight=95
     //% blockId="wfb_blynk_write" block="Blynk: write %value to %pin, token is %auth_token"
-    export function writePinValue(value: string, pin: string, auth_token: string): void {
+    export function writeBlynkPinValue(value: string, pin: string, auth_token: string): void {
         executeHttpMethod(
             HttpMethod.GET,
             "blynk-cloud.com",
@@ -159,7 +159,7 @@ namespace WiFiBit {
      */
     //% weight=94
     //% blockId="wfb_blynk_read" block="Blynk: read %pin, token is %auth_token"
-    export function readPinValue(pin: string, auth_token: string): string {
+    export function readBlynkPinValue(pin: string, auth_token: string): string {
         executeAtCommand("ATE0", 1000)
         let response: string
         serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
@@ -178,9 +178,51 @@ namespace WiFiBit {
     }
 
     /**
-     * Line separator. It's used when headers or body are multiline.
+     * Write Blynk IoT pin value.
+     * @param value Value, eg: "1"
+     * @param pin Pin, eg: "V1"
+     * @param auth_token Token, eg: "BzMEzpZ9Bud9ZUXZoJVEkbfneCavDVDx"
      */
     //% weight=93
+    //% blockId="wfb_blynk_iot_write" block="Blynk IoT: write %value to %pin, token is %auth_token"
+    export function writeBlynkIoTPinValue(value: string, pin: string, auth_token: string): void {
+        executeHttpMethod(
+            HttpMethod.GET,
+            "blynk.cloud",
+            80,
+            "/external/api/update?token=" + auth_token + "&" + pin + "=" + value
+        )
+    }
+
+    /**
+     * Read Blynk IoT pin value.
+     * @param pin Pin, eg: "V1"
+     * @param auth_token Token, eg: "BzMEzpZ9Bud9ZUXZoJVEkbfneCavDVDx"
+     */
+    //% weight=92
+    //% blockId="wfb_blynk_iot_read" block="Blynk IoT: read %pin, token is %auth_token"
+    export function readBlynkIoTPinValue(pin: string, auth_token: string): string {
+        executeAtCommand("ATE0", 1000)
+        let response: string
+        serial.onDataReceived(serial.delimiters(Delimiters.NewLine), function () {
+            response += serial.readString()
+        })
+        executeHttpMethod(
+            HttpMethod.GET,
+            "blynk.cloud",
+            80,
+            "/external/api/get?token=" + auth_token + "&v-1&" + pin
+        )
+        let value: string = response.substr(response.indexOf("{\"" + pin + "\":") + 2 + pin.length + 2, response.indexOf("}") - response.indexOf("{\"" + pin + "\":") - 2 - pin.length - 2).replaceAll("\"", "")
+        response = null
+        serial.onDataReceived(serial.delimiters(Delimiters.NewLine), () => { })
+        return value
+    }
+
+    /**
+     * Line separator. It's used when headers or body are multiline.
+     */
+    //% weight=91
     //% blockId="wfb_crlf" block="CRLF"
     export function newline(): string {
         return "\u000D" + "\u000A"
